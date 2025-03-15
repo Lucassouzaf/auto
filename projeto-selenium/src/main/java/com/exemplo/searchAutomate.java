@@ -14,31 +14,6 @@ import java.util.List;
 import java.util.Random;
 
 public class searchAutomate {
-
-    public static void main(String[] args) {
-        String jsonFilePath = "proxies.json"; // Caminho correto do arquivo JSON
-        List<String> proxies = loadProxies(jsonFilePath);
-
-        if (proxies.isEmpty()) {
-            System.out.println("Nenhum proxy encontrado no arquivo JSON.");
-            return;
-        }
-
-        String proxy = getRandomProxy(proxies);
-        System.out.println("Usando proxy: " + proxy);
-
-        // Configurar Chrome com o proxy selecionado
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--proxy-server=http://" + proxy);
-
-        // Inicializar o WebDriver com as configurações
-        WebDriver driver = new ChromeDriver(options);
-        driver.get("https://www.google.com/");
-
-        // Exemplo de uso do Selenium e do proxy
-        // Implemente as ações que deseja fazer no Selenium aqui
-    }
-
     public static List<String> loadProxies(String filePath) {
         List<String> proxies = new ArrayList<>();
         try (InputStream is = searchAutomate.class.getClassLoader().getResourceAsStream(filePath)) {
@@ -64,5 +39,27 @@ public class searchAutomate {
     public static String getRandomProxy(List<String> proxies) {
         Random rand = new Random();
         return proxies.get(rand.nextInt(proxies.size()));
+    }
+
+    public static void main(String[] args) {
+        String jsonFilePath = "proxies.json"; // Caminho correto do arquivo JSON
+        List<String> proxies = loadProxies(jsonFilePath);
+
+        if (proxies.isEmpty()) {
+            System.out.println("Nenhum proxy encontrado no arquivo JSON.");
+            return;
+        }
+
+        String proxy = getRandomProxy(proxies);
+        System.out.println("Usando proxy: " + proxy);
+
+        // Configurar Chrome com o proxy selecionado
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--proxy-server=http://" + proxy);
+
+        // Inicializar o WebDriver com as configurações
+        WebDriver driver = new ChromeDriver(options);
+        driver.get("https://www.google.com/");
+
     }
 }
