@@ -8,8 +8,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,45 +17,48 @@ public class searchAutomate {
         // Caminho do arquivo JSON
         String jsonFilePath = "/home/lucas-qa/Documentos/auto/projeto-selenium/src/main/resources/proxies.json";
 
-        while (true) {
-            // Carregar a lista de proxies
-            List<String> proxies = loadProxies(jsonFilePath);
+        // Carregar a lista de proxies
+        List<String> proxies = loadProxies(jsonFilePath);
 
-            if (proxies.isEmpty()) {
-                System.out.println("Nenhum proxy encontrado no arquivo JSON.");
-                return;
+        if (proxies.isEmpty()) {
+            System.out.println("Nenhum proxy encontrado no arquivo JSON.");
+            return;
+        }
+
+        String proxy = getRandomProxy(proxies);
+        System.out.println("Usando proxy inicial: " + proxy);
+
+        ChromeOptions options = new ChromeOptions();
+        //options.addArguments("--proxy-server=" + proxy);
+
+        // Evitar detecção de automação
+        options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
+        options.addArguments("--disable-blink-features=AutomationControlled");
+        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+        options.setExperimentalOption("useAutomationExtension", false);
+        options.setPageLoadStrategy(org.openqa.selenium.PageLoadStrategy.EAGER);
+
+        WebDriver driver = new ChromeDriver(options);
+
+        try {
+            while (true) {
+                try {
+                    driver.navigate().to("https://www.google.com/");
+                    Thread.sleep(700);
+
+                    driver.navigate().to("https://teste-ads-phi.vercel.app/");
+                    Thread.sleep(1000);
+                    driver.manage().deleteAllCookies();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Thread.sleep(100);
             }
-
-            // Escolher um proxy aleatório
-            String proxy = getRandomProxy(proxies);
-            System.out.println("Usando proxy: " + proxy);
-
-            // Configurar ChromeOptions com proxy
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--proxy-server=" + proxy);
-
-            // Evitar detecção de automação
-            options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
-            options.addArguments("--disable-blink-features=AutomationControlled");
-            options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-            options.setExperimentalOption("useAutomationExtension", false);
-            options.setPageLoadStrategy(org.openqa.selenium.PageLoadStrategy.EAGER);
-
-            // Inicializar WebDriver
-            WebDriver driver = new ChromeDriver(options);
-
-            try {
-                driver.get("https://www.google.com/");
-                Thread.sleep(700);
-
-                driver.get("https://teste-ads-phi.vercel.app/");
-                Thread.sleep(1000);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                driver.manage().deleteAllCookies();
-            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            driver.quit(); // Fecha o navegador apenas se o programa for encerrado
         }
     }
 
