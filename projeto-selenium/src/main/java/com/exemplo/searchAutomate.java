@@ -8,9 +8,11 @@ import java.util.List;
 
 public class searchAutomate {
     public static void main(String[] args) {
-
+        while(true){
         // Configurar ChromeOptions para evitar detecção
         ChromeOptions options = new ChromeOptions();
+
+        //options.addArguments("--proxy-server=http://45.84.0.26:3122");
 
         // Definir um User-Agent de um navegador real
         options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
@@ -30,21 +32,22 @@ public class searchAutomate {
         try {
             driver.get("https://www.google.com");
 
-            Thread.sleep((long) (Math.random() * 2000 + 1000));
+            Thread.sleep(100);
 
             WebElement searchBox = driver.findElement(By.name("q"));
-            searchBox.sendKeys("Pix Mídia");
-            Thread.sleep((long) (Math.random() * 2000 + 1000));
+            searchBox.sendKeys("g1");
+            Thread.sleep(100);
             searchBox.sendKeys(Keys.RETURN);
 
             WebElement firstResult = driver.findElement(By.cssSelector("h3"));
             firstResult.click();
 
-            Thread.sleep(3000);
+            Thread.sleep(100);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             driver.quit();
+        }
         }
     }
 }
