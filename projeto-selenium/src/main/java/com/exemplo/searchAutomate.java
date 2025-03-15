@@ -3,7 +3,10 @@ package com.exemplo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
@@ -29,7 +32,7 @@ public class searchAutomate {
         System.out.println("Usando proxy inicial: " + proxy);
 
         ChromeOptions options = new ChromeOptions();
-        //options.addArguments("--proxy-server=" + proxy);
+        //options.addArguments("--proxy-server=http://" + proxy);
 
         // Evitar detecção de automação
         options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
@@ -47,8 +50,18 @@ public class searchAutomate {
                     Thread.sleep(700);
 
                     driver.navigate().to("https://teste-ads-phi.vercel.app/");
-                    Thread.sleep(1000);
+                    Thread.sleep(700);
+
+                    //WebElement searchBox = driver.findElement(By.name("q"));
+                    //searchBox.sendKeys("g1");
+                    //Thread.sleep(100);
+                    //searchBox.sendKeys(Keys.RETURN);
+
+                    //WebElement firstResult = driver.findElement(By.cssSelector("h3"));
+                    //firstResult.click();
+
                     driver.manage().deleteAllCookies();
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
