@@ -8,35 +8,35 @@ import java.util.List;
 
 public class searchAutomate {
     public static void main(String[] args) {
-        // Configurar ChromeOptions
+
+        // Configurar ChromeOptions para evitar detecção
         ChromeOptions options = new ChromeOptions();
+
+        // Definir um User-Agent de um navegador real
         options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
 
-        // Inicializar o WebDriver
+        // Remover a flag de automação do Chrome
+        options.addArguments("--disable-blink-features=AutomationControlled");
+
+        // Iniciar o navegador sem a mensagem "Chrome está sendo controlado automaticamente"
+        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+
+        // Remover a variável que indica automação para sites
+        options.setExperimentalOption("useAutomationExtension", false);
+
+        // Inicializar o WebDriver com as configurações
         WebDriver driver = new ChromeDriver(options);
 
         try {
             driver.get("https://www.google.com");
 
-            // Adicionar um pequeno delay aleatório
             Thread.sleep((long) (Math.random() * 2000 + 1000));
 
             WebElement searchBox = driver.findElement(By.name("q"));
-            searchBox.sendKeys("TV corporativa");
+            searchBox.sendKeys("Pix Mídia");
             Thread.sleep((long) (Math.random() * 2000 + 1000));
-            // Capturar todas as sugestões do preenchimento automático
-            List<WebElement> suggestions = driver.findElements(By.cssSelector("li.sbct"));
-            // Verificar se há sugestões disponíveis
-            if (!((List<?>) suggestions).isEmpty()) {
-                // Clicar na primeira sugestão (ou modificar para escolher outra)
-                suggestions.get(1).click();
-            } else {
-                System.out.println("Nenhuma sugestão encontrada!");
-                searchBox.sendKeys(Keys.RETURN); // Caso não haja sugestões, faz a pesquisa normal
-            }
             searchBox.sendKeys(Keys.RETURN);
 
-            // Clicar no primeiro resultado da pesquisa
             WebElement firstResult = driver.findElement(By.cssSelector("h3"));
             firstResult.click();
 
