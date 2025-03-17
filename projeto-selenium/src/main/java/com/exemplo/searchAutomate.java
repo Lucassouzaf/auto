@@ -4,9 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
@@ -16,11 +14,10 @@ import java.util.List;
 import java.util.Random;
 
 public class searchAutomate {
-    public static void main(String[] args) {
-        // Caminho do arquivo JSON
-        String jsonFilePath = "/home/lucas-qa/Documentos/auto/projeto-selenium/src/main/resources/proxies.json";
+    private static final int NUM_INSTANCES = 5;
 
-        // Carregar a lista de proxies
+    public static void main(String[] args) {
+        String jsonFilePath = "/home/lucas-qa/Documentos/auto/projeto-selenium/src/main/resources/proxies.json";
         List<String> proxies = loadProxies(jsonFilePath);
 
         if (proxies.isEmpty()) {
@@ -28,13 +25,28 @@ public class searchAutomate {
             return;
         }
 
-        String proxy = getRandomProxy(proxies);
-        System.out.println("Usando proxy inicial: " + proxy);
+        List<Thread> threads = new ArrayList<>();
 
+        for (int i = 0; i < NUM_INSTANCES; i++) {
+            String proxy = getRandomProxy(proxies);
+            Thread thread = new Thread(() -> runInstance(proxy));
+            threads.add(thread);
+            thread.start();
+        }
+
+        // Aguarda todas as threads finalizarem (Opcional)
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void runInstance(String proxy) {
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("--proxy-server=http://" + proxy);
-
-        // Evitar detecção de automação
         options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
@@ -42,15 +54,24 @@ public class searchAutomate {
         options.setPageLoadStrategy(org.openqa.selenium.PageLoadStrategy.EAGER);
 
         WebDriver driver = new ChromeDriver(options);
+        System.out.println("Iniciando instância com proxy: " + proxy);
 
         try {
             while (true) {
                 try {
                     driver.navigate().to("https://www.google.com/");
-                    Thread.sleep(700);
+                    Thread.sleep(500);
 
                     driver.navigate().to("https://teste-ads-phi.vercel.app/");
-                    Thread.sleep(700);
+                    Thread.sleep(500);
+                    driver.manage().deleteAllCookies();
+
+                    driver.navigate().to("https://industriainovadora.com.br/");
+                    Thread.sleep(500);
+                    driver.manage().deleteAllCookies();
+
+                    driver.navigate().to("https://rsinovador.com.br/");
+                    Thread.sleep(500);
 
                     //WebElement searchBox = driver.findElement(By.name("q"));
                     //searchBox.sendKeys("g1");
@@ -59,10 +80,7 @@ public class searchAutomate {
 
                     //WebElement firstResult = driver.findElement(By.cssSelector("h3"));
                     //firstResult.click();
-
                     driver.manage().deleteAllCookies();
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -71,12 +89,11 @@ public class searchAutomate {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            driver.quit(); // Fecha o navegador apenas se o programa for encerrado
+            driver.quit();
         }
     }
 
-    // Método para carregar a lista de proxies do JSON
-    public static List<String> loadProxies(String filePath) {
+    private static List<String> loadProxies(String filePath) {
         List<String> proxies = new ArrayList<>();
         try (FileReader reader = new FileReader(filePath)) {
             JSONTokener tokener = new JSONTokener(reader);
@@ -93,8 +110,7 @@ public class searchAutomate {
         return proxies;
     }
 
-    // Método para escolher um proxy aleatório
-    public static String getRandomProxy(List<String> proxies) {
+    private static String getRandomProxy(List<String> proxies) {
         Random rand = new Random();
         return proxies.get(rand.nextInt(proxies.size()));
     }
